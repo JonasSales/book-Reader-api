@@ -1,0 +1,355 @@
+{
+  "app": {
+    "title": "Book Reader"
+  },
+  "navigation": {
+    "toggle": "Toggle navigation",
+    "home": "Home",
+    "entities": "Entities"
+  },
+  "home": {
+    "index": {
+      "headline": "Welcome to your new app!",
+      "text": "Your app was created with <a href=\"https://bootify.io\" target=\"_blank\" className=\"underline\">Bootify.io</a> and can now be customized. If you are happy with the result, <strong>please recommend us to other developers</strong> - so Bootify.io can grow further.",
+      "swagger": {
+        "text": "Swagger is",
+        "link": "available here"
+      },
+      "exploreEntities": "Explore your entities"
+    }
+  },
+  "error": {
+    "page": {
+      "headline": "Error",
+      "message": "The page you are looking for is not available right now."
+    }
+  },
+  "user": {
+    "list": {
+      "headline": "Users",
+      "createNew": "Create new User",
+      "empty": "No Users could be found.",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "add": {
+      "headline": "Add User",
+      "back": "Back to list"
+    },
+    "id": {
+      "label": "Id"
+    },
+    "fullName": {
+      "label": "Full Name"
+    },
+    "email": {
+      "label": "Email"
+    },
+    "password": {
+      "label": "Password"
+    },
+    "isPremium": {
+      "label": "Is Premium"
+    },
+    "createdAt": {
+      "label": "Created At"
+    },
+    "userRoleRoles": {
+      "label": "User Role Roles"
+    },
+    "edit": {
+      "headline": "Edit User",
+      "back": "Back to list"
+    },
+    "book": {
+      "user": {
+        "referenced": "This entity is still referenced by Book {{id}} via field User."
+      }
+    },
+    "readingProgress": {
+      "user": {
+        "referenced": "This entity is still referenced by Reading Progress {{id}} via field User."
+      }
+    },
+    "order": {
+      "user": {
+        "referenced": "This entity is still referenced by Order {{id}} via field User."
+      }
+    },
+    "userSetting": {
+      "user": {
+        "referenced": "This entity is still referenced by User Setting {{id}} via field User."
+      }
+    },
+    "create": {
+      "success": "User was created successfully."
+    },
+    "update": {
+      "success": "User was updated successfully."
+    },
+    "delete": {
+      "success": "User was removed successfully."
+    }
+  },
+  "role": {
+    "list": {
+      "headline": "Roles",
+      "createNew": "Create new Role",
+      "empty": "No Roles could be found.",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "add": {
+      "headline": "Add Role",
+      "back": "Back to list"
+    },
+    "id": {
+      "label": "Id"
+    },
+    "name": {
+      "label": "Name"
+    },
+    "edit": {
+      "headline": "Edit Role",
+      "back": "Back to list"
+    },
+    "user": {
+      "userRoleRoles": {
+        "referenced": "This entity is still referenced by User {{id}} via field User Role Roles."
+      }
+    },
+    "create": {
+      "success": "Role was created successfully."
+    },
+    "update": {
+      "success": "Role was updated successfully."
+    },
+    "delete": {
+      "success": "Role was removed successfully."
+    }
+  },
+  "book": {
+    "list": {
+      "headline": "Books",
+      "createNew": "Create new Book",
+      "empty": "No Books could be found.",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "add": {
+      "headline": "Add Book",
+      "back": "Back to list"
+    },
+    "id": {
+      "label": "Id"
+    },
+    "title": {
+      "label": "Title"
+    },
+    "author": {
+      "label": "Author"
+    },
+    "description": {
+      "label": "Description"
+    },
+    "coverUrl": {
+      "label": "Cover Url"
+    },
+    "fileUrl": {
+      "label": "File Url"
+    },
+    "fileName": {
+      "label": "File Name"
+    },
+    "fileType": {
+      "label": "File Type"
+    },
+    "isPremium": {
+      "label": "Is Premium"
+    },
+    "uploadedAt": {
+      "label": "Uploaded At"
+    },
+    "user": {
+      "label": "User"
+    },
+    "edit": {
+      "headline": "Edit Book",
+      "back": "Back to list"
+    },
+    "readingProgress": {
+      "book": {
+        "referenced": "This entity is still referenced by Reading Progress {{id}} via field Book."
+      }
+    },
+    "create": {
+      "success": "Book was created successfully."
+    },
+    "update": {
+      "success": "Book was updated successfully."
+    },
+    "delete": {
+      "success": "Book was removed successfully."
+    }
+  },
+  "readingProgress": {
+    "list": {
+      "headline": "Reading Progresses",
+      "createNew": "Create new Reading Progress",
+      "empty": "No Reading Progresses could be found.",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "add": {
+      "headline": "Add Reading Progress",
+      "back": "Back to list"
+    },
+    "id": {
+      "label": "Id"
+    },
+    "currentPage": {
+      "label": "Current Page"
+    },
+    "percentageCompleted": {
+      "label": "Percentage Completed"
+    },
+    "lastCfiRange": {
+      "label": "Last Cfi Range"
+    },
+    "deviceType": {
+      "label": "Device Type"
+    },
+    "lastReadAt": {
+      "label": "Last Read At"
+    },
+    "user": {
+      "label": "User"
+    },
+    "book": {
+      "label": "Book"
+    },
+    "edit": {
+      "headline": "Edit Reading Progress",
+      "back": "Back to list"
+    },
+    "create": {
+      "success": "Reading Progress was created successfully."
+    },
+    "update": {
+      "success": "Reading Progress was updated successfully."
+    },
+    "delete": {
+      "success": "Reading Progress was removed successfully."
+    }
+  },
+  "order": {
+    "list": {
+      "headline": "Orders",
+      "createNew": "Create new Order",
+      "empty": "No Orders could be found.",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "add": {
+      "headline": "Add Order",
+      "back": "Back to list"
+    },
+    "id": {
+      "label": "Id"
+    },
+    "totalAmount": {
+      "label": "Total Amount"
+    },
+    "status": {
+      "label": "Status"
+    },
+    "paymentMethod": {
+      "label": "Payment Method"
+    },
+    "transactionId": {
+      "label": "Transaction Id"
+    },
+    "createdAt": {
+      "label": "Created At"
+    },
+    "user": {
+      "label": "User"
+    },
+    "edit": {
+      "headline": "Edit Order",
+      "back": "Back to list"
+    },
+    "create": {
+      "success": "Order was created successfully."
+    },
+    "update": {
+      "success": "Order was updated successfully."
+    },
+    "delete": {
+      "success": "Order was removed successfully."
+    }
+  },
+  "userSetting": {
+    "list": {
+      "headline": "User Settings",
+      "createNew": "Create new User Setting",
+      "empty": "No User Settings could be found.",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "add": {
+      "headline": "Add User Setting",
+      "back": "Back to list"
+    },
+    "id": {
+      "label": "Id"
+    },
+    "theme": {
+      "label": "Theme"
+    },
+    "fontSize": {
+      "label": "Font Size"
+    },
+    "fontFamily": {
+      "label": "Font Family"
+    },
+    "user": {
+      "label": "User"
+    },
+    "edit": {
+      "headline": "Edit User Setting",
+      "back": "Back to list"
+    },
+    "create": {
+      "success": "User Setting was created successfully."
+    },
+    "update": {
+      "success": "User Setting was updated successfully."
+    },
+    "delete": {
+      "success": "User Setting was removed successfully."
+    }
+  },
+  "select": {
+    "empty": {
+      "label": "Please select"
+    }
+  },
+  "delete": {
+    "confirm": "Do you really want to delete this element? This cannot be undone."
+  },
+  "operation": {
+    "success": "Your operation was successful."
+  },
+  "required": "Please provide a value.",
+  "maxlength": "Your value must have a length of less then ${max} characters.",
+  "valid": {
+    "offsetDateTime": "Please provide a valid date with offset, for example \"2026-01-23T14:55:00+01:00\".",
+    "double": "Please provide a valid floating point number.",
+    "number": "Please provide a valid number.",
+    "numeric": {
+      "format": "Please provide a valid numeric number.",
+      "digits": "Your provided value is out of the valid range: <{{precision}} digits>.<{{scale}} digits> expected."
+    }
+  }
+}
