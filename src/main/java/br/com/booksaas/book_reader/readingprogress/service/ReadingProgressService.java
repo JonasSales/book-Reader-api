@@ -1,13 +1,13 @@
-package br.com.booksaas.book_reader.ReadingProgress.service;
+package br.com.booksaas.book_reader.readingprogress.service;
 
 import br.com.booksaas.book_reader.book.entity.Book;
-import br.com.booksaas.book_reader.ReadingProgress.entity.ReadingProgress;
+import br.com.booksaas.book_reader.readingprogress.entity.ReadingProgress;
 import br.com.booksaas.book_reader.user.entity.User;
 import br.com.booksaas.book_reader.events.BeforeDeleteBook;
 import br.com.booksaas.book_reader.events.BeforeDeleteUser;
-import br.com.booksaas.book_reader.ReadingProgress.dto.ReadingProgressDTO;
+import br.com.booksaas.book_reader.readingprogress.dto.ReadingProgressDTO;
 import br.com.booksaas.book_reader.book.repositorie.BookRepository;
-import br.com.booksaas.book_reader.ReadingProgress.repositorie.ReadingProgressRepository;
+import br.com.booksaas.book_reader.readingprogress.repositorie.ReadingProgressRepository;
 import br.com.booksaas.book_reader.user.repositorie.UserRepository;
 import br.com.booksaas.book_reader.util.NotFoundException;
 import br.com.booksaas.book_reader.util.ReferencedException;

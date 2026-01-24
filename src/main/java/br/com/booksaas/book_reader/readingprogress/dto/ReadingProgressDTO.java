@@ -1,4 +1,4 @@
-package br.com.booksaas.book_reader.ReadingProgress.dto;
+package br.com.booksaas.book_reader.readingprogress.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

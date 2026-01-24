@@ -1,4 +1,4 @@
-package br.com.booksaas.book_reader.ReadingProgress.entity;
+package br.com.booksaas.book_reader.readingprogress.entity;
 
 import br.com.booksaas.book_reader.book.entity.Book;
 import br.com.booksaas.book_reader.user.entity.User;

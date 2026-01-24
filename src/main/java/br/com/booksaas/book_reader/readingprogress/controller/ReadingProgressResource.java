@@ -1,8 +1,8 @@
-package br.com.booksaas.book_reader.ReadingProgress.controller;
+package br.com.booksaas.book_reader.readingprogress.controller;
 
-import br.com.booksaas.book_reader.ReadingProgress.dto.ReadingProgressDTO;
+import br.com.booksaas.book_reader.readingprogress.dto.ReadingProgressDTO;
 import br.com.booksaas.book_reader.book.service.BookService;
-import br.com.booksaas.book_reader.ReadingProgress.service.ReadingProgressService;
+import br.com.booksaas.book_reader.readingprogress.service.ReadingProgressService;
 import br.com.booksaas.book_reader.user.service.UserService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
