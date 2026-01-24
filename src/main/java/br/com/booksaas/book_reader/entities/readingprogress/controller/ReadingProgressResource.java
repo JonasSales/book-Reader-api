@@ -43,7 +43,7 @@ public class ReadingProgressResource {
 
     @GetMapping("/{id}")
     public ResponseEntity<ReadingProgressDTO> getReadingProgress(
-            @PathVariable(name = "id") final Long id) {
+            @PathVariable final Long id) {
         return ResponseEntity.ok(readingProgressService.get(id));
     }
 
@@ -56,15 +56,15 @@ public class ReadingProgressResource {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateReadingProgress(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final ReadingProgressDTO readingProgressDTO) {
+    public ResponseEntity<Long> updateReadingProgress(@PathVariable final Long id,
+                                                      @RequestBody @Valid final ReadingProgressDTO readingProgressDTO) {
         readingProgressService.update(id, readingProgressDTO);
         return ResponseEntity.ok(id);
     }
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteReadingProgress(@PathVariable(name = "id") final Long id) {
+    public ResponseEntity<Void> deleteReadingProgress(@PathVariable final Long id) {
         readingProgressService.delete(id);
         return ResponseEntity.noContent().build();
     }

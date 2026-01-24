@@ -92,7 +92,7 @@ public class UserSettingService {
         return userSettingDTO;
     }
 
-    private UserSetting mapToEntity(
+    private void mapToEntity(
             final UserSettingDTO userSettingDTO,
             final UserSetting userSetting
     ) {
@@ -106,7 +106,6 @@ public class UserSettingService {
                 .orElseThrow(() -> new NotFoundException("user not found"));
 
         userSetting.setUser(user);
-        return userSetting;
     }
 
     /* =======================

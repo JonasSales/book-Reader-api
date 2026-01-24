@@ -26,7 +26,7 @@ public class SetupDataLoader implements CommandLineRunner {
 
     @Override
     @Transactional
-    public void run(String @NonNull ... args) throws Exception {
+    public void run(String @NonNull ... args) {
         // 1. Criar as roles com prefixo ROLE_
 
         // 2. Criar o usuário Admin

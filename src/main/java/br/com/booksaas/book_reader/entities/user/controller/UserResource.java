@@ -27,7 +27,7 @@ public class UserResource {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserDTO> getAllUsers(
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         return userService.findAll(pageable);

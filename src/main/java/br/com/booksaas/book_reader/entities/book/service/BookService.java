@@ -100,7 +100,7 @@ public class BookService {
         return bookDTO;
     }
 
-    private Book mapToEntity(final BookDTO bookDTO, final Book book) {
+    private void mapToEntity(final BookDTO bookDTO, final Book book) {
         book.setTitle(bookDTO.getTitle());
         book.setAuthor(bookDTO.getAuthor());
         book.setDescription(bookDTO.getDescription());
@@ -117,7 +117,6 @@ public class BookService {
                 .orElseThrow(() -> new NotFoundException("user not found"));
 
         book.setUser(user);
-        return book;
     }
 
     /* =======================

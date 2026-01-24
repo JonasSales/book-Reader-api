@@ -76,8 +76,8 @@ public class ReadingProgressService {
         return readingProgressDTO;
     }
 
-    private ReadingProgress mapToEntity(final ReadingProgressDTO readingProgressDTO,
-            final ReadingProgress readingProgress) {
+    private void mapToEntity(final ReadingProgressDTO readingProgressDTO,
+                             final ReadingProgress readingProgress) {
         readingProgress.setCurrentPage(readingProgressDTO.getCurrentPage());
         readingProgress.setPercentageCompleted(readingProgressDTO.getPercentageCompleted());
         readingProgress.setLastCfiRange(readingProgressDTO.getLastCfiRange());
@@ -89,7 +89,6 @@ public class ReadingProgressService {
         final Book book = readingProgressDTO.getBook() == null ? null : bookRepository.findById(readingProgressDTO.getBook())
                 .orElseThrow(() -> new NotFoundException("book not found"));
         readingProgress.setBook(book);
-        return readingProgress;
     }
 
     @EventListener(BeforeDeleteUser.class)

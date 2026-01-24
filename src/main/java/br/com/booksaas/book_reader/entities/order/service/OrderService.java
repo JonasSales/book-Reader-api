@@ -87,7 +87,7 @@ public class OrderService {
         return orderDTO;
     }
 
-    private Order mapToEntity(final OrderDTO orderDTO, final Order order) {
+    private void mapToEntity(final OrderDTO orderDTO, final Order order) {
         order.setTotalAmount(orderDTO.getTotalAmount());
         order.setStatus(orderDTO.getStatus());
         order.setPaymentMethod(orderDTO.getPaymentMethod());
@@ -100,7 +100,6 @@ public class OrderService {
                 .orElseThrow(() -> new NotFoundException("user not found"));
 
         order.setUser(user);
-        return order;
     }
 
     /* =======================

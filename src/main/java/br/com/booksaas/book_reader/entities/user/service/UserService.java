@@ -6,6 +6,8 @@ import br.com.booksaas.book_reader.entities.user.repositorie.UserRepository;
 import br.com.booksaas.book_reader.util.CustomCollectors;
 import br.com.booksaas.book_reader.util.NotFoundException;
 import java.util.Map;
+
+import org.jspecify.annotations.NonNull;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -42,7 +44,7 @@ public class UserService implements UserDetailsService {
        SPRING SECURITY
        ======================= */
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email: " + email));
@@ -113,7 +115,7 @@ public class UserService implements UserDetailsService {
        ======================= */
     private void validateEmailUniqueness(String email, Long idToIgnore) {
         userRepository.findByEmail(email).ifPresent(user -> {
-            if (idToIgnore == null || !user.getId().equals(idToIgnore)) {
+            if (!user.getId().equals(idToIgnore)) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Email already in use"
@@ -135,12 +137,11 @@ public class UserService implements UserDetailsService {
         return userDTO;
     }
 
-    private User mapToEntity(final UserDTO userDTO, final User user) {
+    private void mapToEntity(final UserDTO userDTO, final User user) {
         user.setFullName(userDTO.getFullName());
         user.setEmail(userDTO.getEmail());
         user.setIsPremium(userDTO.getIsPremium());
         user.setCreatedAt(userDTO.getCreatedAt());
-        return user;
     }
 
     /* =======================

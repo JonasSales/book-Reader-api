@@ -30,7 +30,7 @@ public class UserSettingResource {
 
     @GetMapping
     public Page<UserSettingDTO> getAllUserSettings(
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         return userSettingService.findAll(pageable);

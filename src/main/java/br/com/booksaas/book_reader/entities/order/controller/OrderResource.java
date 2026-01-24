@@ -29,7 +29,7 @@ public class OrderResource {
 
     @GetMapping
     public Page<OrderDTO> getAllOrders(
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         return orderService.findAll(pageable);
