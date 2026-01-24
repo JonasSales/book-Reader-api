@@ -62,8 +62,10 @@ public class BookService {
     /* =======================
        CREATE
        ======================= */
-    public Long create(final BookDTO bookDTO) {
+    public Long create(Long id,final BookDTO bookDTO) {
         final Book book = new Book();
+        User user = new User(userService.get(id));
+        book.setUser(user);
         mapToEntity(bookDTO, book);
         return bookRepository.save(book).getId();
     }
