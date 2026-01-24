@@ -2,6 +2,7 @@ package br.com.booksaas.book_reader.entities.book.service;
 
 import br.com.booksaas.book_reader.entities.book.entity.Book;
 import br.com.booksaas.book_reader.entities.user.entity.User;
+import br.com.booksaas.book_reader.entities.user.service.UserService;
 import br.com.booksaas.book_reader.events.BeforeDeleteBook;
 import br.com.booksaas.book_reader.events.BeforeDeleteUser;
 import br.com.booksaas.book_reader.entities.book.dto.BookDTO;
@@ -23,16 +24,15 @@ import org.springframework.stereotype.Service;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
     private final ApplicationEventPublisher publisher;
+    private final UserService userService;
 
     public BookService(
             final BookRepository bookRepository,
-            final UserRepository userRepository,
-            final ApplicationEventPublisher publisher
+            final ApplicationEventPublisher publisher, UserService userService
     ) {
         this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.publisher = publisher;
     }
 
@@ -51,6 +51,13 @@ public class BookService {
         return bookRepository.findById(id)
                 .map(book -> mapToDTO(book, new BookDTO()))
                 .orElseThrow(NotFoundException::new);
+    }
+
+    /* =======================
+       BUSCA DE LIVROS POR USUARIO
+       ======================= */
+    public Page<BookDTO> findBookByUser(Long idUser, Pageable pageable){
+        return bookRepository.findByUserId(idUser, pageable).map(book -> mapToDTO(book, new BookDTO()));
     }
 
     /* =======================
@@ -111,10 +118,7 @@ public class BookService {
         book.setIsPremium(bookDTO.getIsPremium());
         book.setUploadedAt(bookDTO.getUploadedAt());
 
-        final User user = bookDTO.getUser() == null
-                ? null
-                : userRepository.findById(bookDTO.getUser())
-                .orElseThrow(() -> new NotFoundException("user not found"));
+        final User user = new User(userService.get(book.getUser().getId()));
 
         book.setUser(user);
     }

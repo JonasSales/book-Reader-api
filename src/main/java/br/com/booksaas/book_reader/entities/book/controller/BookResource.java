@@ -35,6 +35,15 @@ public class BookResource {
         return bookService.findAll(pageable);
     }
 
+    @GetMapping("/user/{id}")
+    public Page<BookDTO> getBookByUser(
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable,
+            @PathVariable Long id
+    ) {
+        return bookService.findBookByUser(id, pageable);
+    }
+
     @GetMapping("/{id}")
     public BookDTO getBook(@PathVariable Long id) {
         return bookService.get(id);
