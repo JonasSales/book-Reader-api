@@ -1,6 +1,7 @@
 package br.com.booksaas.book_reader.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
@@ -21,6 +22,7 @@ public class UserDTO {
 
     @NotNull
     @Size(max = 255)
+    @Email
     private String email;
 
     @NotNull
@@ -33,6 +35,6 @@ public class UserDTO {
 
     private OffsetDateTime createdAt;
 
-    private List<Long> userRoleRoles;
+    private List<Long> userRoles;
 
 }
