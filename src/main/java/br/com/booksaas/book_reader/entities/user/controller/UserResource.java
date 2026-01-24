@@ -1,6 +1,7 @@
 package br.com.booksaas.book_reader.entities.user.controller;
 
 import br.com.booksaas.book_reader.entities.user.dto.UserDTO;
+import br.com.booksaas.book_reader.entities.user.entity.User;
 import br.com.booksaas.book_reader.entities.user.service.UserService;
 import jakarta.validation.Valid;
 
@@ -11,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -34,8 +36,15 @@ public class UserResource {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDTO getUser(@PathVariable Long id) {
         return userService.get(id);
+    }
+
+    @GetMapping("/me")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDTO me(@AuthenticationPrincipal User user){
+        return userService.get(user.getId());
     }
 
     @PostMapping
@@ -44,18 +53,29 @@ public class UserResource {
         return userService.create(userDTO);
     }
 
+    @PutMapping()
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateAccount(@AuthenticationPrincipal User user, @RequestBody @Valid UserDTO userDTO) {
+        userService.update(user.getId(), userDTO);
+    }
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUser(
-            @PathVariable Long id,
-            @RequestBody @Valid UserDTO userDTO
-    ) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public void updateUser(@PathVariable Long id, @RequestBody @Valid UserDTO userDTO){
         userService.update(id, userDTO);
     }
 
+    @DeleteMapping()
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(@AuthenticationPrincipal User user) {
+        userService.delete(user.getId());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id) {
+    public void delete(@PathVariable Long id){
         userService.delete(id);
     }
 }
