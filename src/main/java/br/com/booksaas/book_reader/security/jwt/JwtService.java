@@ -1,6 +1,5 @@
 package br.com.booksaas.book_reader.security.jwt;
 
-import br.com.booksaas.book_reader.role.entity.Role;
 import br.com.booksaas.book_reader.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -37,8 +36,7 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId().toString());
         claims.put("name", user.getFullName());
-        claims.put("roles", user.getUserRoleRoles().stream()
-                .map(Role::getName).toList());
+        claims.put("roles", user.getRole());
         return generateToken(claims, userDetails);
     }
 

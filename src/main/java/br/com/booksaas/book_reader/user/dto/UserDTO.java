@@ -1,5 +1,6 @@
 package br.com.booksaas.book_reader.user.dto;
 
+import br.com.booksaas.book_reader.user.entity.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +36,6 @@ public class UserDTO {
 
     private OffsetDateTime createdAt;
 
-    private List<Long> userRoles;
+    private Role role;
 
 }

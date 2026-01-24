@@ -1,20 +1,13 @@
 package br.com.booksaas.book_reader.user.service;
-
-import br.com.booksaas.book_reader.role.entity.Role;
-import br.com.booksaas.book_reader.events.BeforeDeleteRole;
 import br.com.booksaas.book_reader.events.BeforeDeleteUser;
-import br.com.booksaas.book_reader.role.repositorie.RoleRepository;
 import br.com.booksaas.book_reader.user.entity.User;
 import br.com.booksaas.book_reader.user.dto.UserDTO;
 import br.com.booksaas.book_reader.user.repositorie.UserRepository;
 import br.com.booksaas.book_reader.util.CustomCollectors;
 import br.com.booksaas.book_reader.util.NotFoundException;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,18 +25,15 @@ import org.springframework.http.HttpStatus;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final ApplicationEventPublisher publisher;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(
             final UserRepository userRepository,
-            final RoleRepository roleRepository,
             final ApplicationEventPublisher publisher,
             @Lazy final PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.publisher = publisher;
         this.passwordEncoder = passwordEncoder;
     }
@@ -53,7 +43,7 @@ public class UserService implements UserDetailsService {
        ======================= */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmailWithRoles(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email: " + email));
     }
@@ -84,14 +74,7 @@ public class UserService implements UserDetailsService {
         final User user = new User();
         mapToEntity(userDTO, user);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-
-        final Role roleUser = roleRepository.findAll().stream()
-                .filter(r -> "ROLE_USER".equalsIgnoreCase(r.getName()))
-                .findFirst()
-                .orElseThrow(() ->
-                        new NotFoundException("Default role 'ROLE_USER' not found"));
-
-        user.setUserRoleRoles(new HashSet<>(List.of(roleUser)));
+        user.setRole(br.com.booksaas.book_reader.user.entity.Role.ROLE_USER);
         return userRepository.save(user).getId();
     }
 
@@ -148,12 +131,7 @@ public class UserService implements UserDetailsService {
         userDTO.setEmail(user.getEmail());
         userDTO.setIsPremium(user.getIsPremium());
         userDTO.setCreatedAt(user.getCreatedAt());
-        userDTO.setUserRoles(
-                user.getUserRoleRoles()
-                        .stream()
-                        .map(Role::getId)
-                        .toList()
-        );
+        userDTO.setRole(user.getRole());
         return userDTO;
     }
 
@@ -162,19 +140,6 @@ public class UserService implements UserDetailsService {
         user.setEmail(userDTO.getEmail());
         user.setIsPremium(userDTO.getIsPremium());
         user.setCreatedAt(userDTO.getCreatedAt());
-
-        final List<Role> roles = roleRepository.findAllById(
-                userDTO.getUserRoles() == null
-                        ? List.of()
-                        : userDTO.getUserRoles()
-        );
-
-        if (userDTO.getUserRoles() != null
-                && roles.size() != userDTO.getUserRoles().size()) {
-            throw new NotFoundException("one of userRoleRoles not found");
-        }
-
-        user.setUserRoleRoles(new HashSet<>(roles));
         return user;
     }
 
@@ -188,17 +153,5 @@ public class UserService implements UserDetailsService {
                         User::getId,
                         User::getFullName
                 ));
-    }
-
-    /* =======================
-       EVENTOS
-       ======================= */
-    @EventListener(BeforeDeleteRole.class)
-    public void on(final BeforeDeleteRole event) {
-        userRepository.findAllByUserRoleRolesId(event.getId())
-                .forEach(user ->
-                        user.getUserRoleRoles()
-                                .removeIf(role ->
-                                        role.getId().equals(event.getId())));
     }
 }
