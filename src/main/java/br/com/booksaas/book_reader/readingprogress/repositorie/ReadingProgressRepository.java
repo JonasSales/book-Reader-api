@@ -1,6 +1,6 @@
-package br.com.booksaas.book_reader.ReadingProgress.repositorie;
+package br.com.booksaas.book_reader.readingprogress.repositorie;
 
-import br.com.booksaas.book_reader.ReadingProgress.entity.ReadingProgress;
+import br.com.booksaas.book_reader.readingprogress.entity.ReadingProgress;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

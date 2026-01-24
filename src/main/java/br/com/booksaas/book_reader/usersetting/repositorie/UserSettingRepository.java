@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserSettingRepository extends JpaRepository<UserSetting, Long> {
 
-    UserSetting findFirstByUserId(Long id);
-
+    boolean existsByUserId(Long userId);
 }
