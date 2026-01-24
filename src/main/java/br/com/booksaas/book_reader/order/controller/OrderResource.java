@@ -3,21 +3,16 @@ package br.com.booksaas.book_reader.order.controller;
 import br.com.booksaas.book_reader.order.dto.OrderDTO;
 import br.com.booksaas.book_reader.order.service.OrderService;
 import br.com.booksaas.book_reader.user.service.UserService;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -27,45 +22,48 @@ public class OrderResource {
     private final OrderService orderService;
     private final UserService userService;
 
-    public OrderResource(final OrderService orderService, final UserService userService) {
+    public OrderResource(OrderService orderService, UserService userService) {
         this.orderService = orderService;
         this.userService = userService;
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> getAllOrders() {
-        return ResponseEntity.ok(orderService.findAll());
+    public Page<OrderDTO> getAllOrders(
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        return orderService.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDTO> getOrder(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(orderService.get(id));
+    public OrderDTO getOrder(@PathVariable Long id) {
+        return orderService.get(id);
     }
 
     @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createOrder(@RequestBody @Valid final OrderDTO orderDTO) {
-        final Long createdId = orderService.create(orderDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long createOrder(@RequestBody @Valid OrderDTO dto) {
+        return orderService.create(dto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateOrder(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final OrderDTO orderDTO) {
-        orderService.update(id, orderDTO);
-        return ResponseEntity.ok(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateOrder(@PathVariable Long id,
+                            @RequestBody @Valid OrderDTO dto) {
+        orderService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteOrder(@PathVariable(name = "id") final Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteOrder(@PathVariable Long id) {
         orderService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/userValues")
-    public ResponseEntity<Map<Long, String>> getUserValues() {
-        return ResponseEntity.ok(userService.getUserValues());
+    /* =======================
+       USO INTERNO / LOOKUPS
+       ======================= */
+    @GetMapping("/users/values")
+    public Map<Long, String> getUserValues() {
+        return userService.getUserValues();
     }
-
 }

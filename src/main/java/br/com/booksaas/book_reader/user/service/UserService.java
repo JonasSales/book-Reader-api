@@ -15,6 +15,8 @@ import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,47 +36,68 @@ public class UserService implements UserDetailsService {
     private final ApplicationEventPublisher publisher;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(final UserRepository userRepository, final RoleRepository roleRepository,
-                       final ApplicationEventPublisher publisher, @Lazy final PasswordEncoder passwordEncoder) {
+    public UserService(
+            final UserRepository userRepository,
+            final RoleRepository roleRepository,
+            final ApplicationEventPublisher publisher,
+            @Lazy final PasswordEncoder passwordEncoder
+    ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.publisher = publisher;
         this.passwordEncoder = passwordEncoder;
     }
 
+    /* =======================
+       SPRING SECURITY
+       ======================= */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmailWithRoles(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found with email: " + email));
     }
 
-    public List<UserDTO> findAll() {
-        final List<User> users = userRepository.findAll(Sort.by("id"));
-        return users.stream()
-                .map(user -> mapToDTO(user, new UserDTO()))
-                .toList();
+    /* =======================
+       PAGINAÇÃO
+       ======================= */
+    public Page<UserDTO> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(user -> mapToDTO(user, new UserDTO()));
     }
 
+    /* =======================
+       BUSCA POR ID
+       ======================= */
     public UserDTO get(final Long id) {
         return userRepository.findById(id)
                 .map(user -> mapToDTO(user, new UserDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
+    /* =======================
+       CREATE
+       ======================= */
     public Long create(final UserDTO userDTO) {
         validateEmailUniqueness(userDTO.getEmail(), null);
 
         final User user = new User();
         mapToEntity(userDTO, user);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        Role roleUser = roleRepository.findAll().stream()
+
+        final Role roleUser = roleRepository.findAll().stream()
                 .filter(r -> "ROLE_USER".equalsIgnoreCase(r.getName()))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Default role 'ROLE_USER' not found"));
+                .orElseThrow(() ->
+                        new NotFoundException("Default role 'ROLE_USER' not found"));
+
         user.setUserRoleRoles(new HashSet<>(List.of(roleUser)));
         return userRepository.save(user).getId();
     }
 
+    /* =======================
+       UPDATE
+       ======================= */
     public void update(final Long id, final UserDTO userDTO) {
         final User user = userRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -82,6 +105,7 @@ public class UserService implements UserDetailsService {
         validateEmailUniqueness(userDTO.getEmail(), id);
 
         mapToEntity(userDTO, user);
+
         if (userDTO.getPassword() != null && !userDTO.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
@@ -89,30 +113,47 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    /* =======================
+       DELETE
+       ======================= */
     public void delete(final Long id) {
         final User user = userRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
+
         publisher.publishEvent(new BeforeDeleteUser(id));
+
         userRepository.delete(user);
     }
 
+    /* =======================
+       VALIDAÇÕES
+       ======================= */
     private void validateEmailUniqueness(String email, Long idToIgnore) {
         userRepository.findByEmail(email).ifPresent(user -> {
             if (idToIgnore == null || !user.getId().equals(idToIgnore)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Email already in use"
+                );
             }
         });
     }
 
+    /* =======================
+       MAPEAMENTOS
+       ======================= */
     private UserDTO mapToDTO(final User user, final UserDTO userDTO) {
         userDTO.setId(user.getId());
         userDTO.setFullName(user.getFullName());
         userDTO.setEmail(user.getEmail());
         userDTO.setIsPremium(user.getIsPremium());
         userDTO.setCreatedAt(user.getCreatedAt());
-        userDTO.setUserRoleRoles(user.getUserRoleRoles().stream()
-                .map(Role::getId)
-                .toList());
+        userDTO.setUserRoles(
+                user.getUserRoleRoles()
+                        .stream()
+                        .map(Role::getId)
+                        .toList()
+        );
         return userDTO;
     }
 
@@ -122,27 +163,42 @@ public class UserService implements UserDetailsService {
         user.setIsPremium(userDTO.getIsPremium());
         user.setCreatedAt(userDTO.getCreatedAt());
 
-        final List<Role> userRoleRoles = roleRepository.findAllById(
-                userDTO.getUserRoleRoles() == null ? List.of() : userDTO.getUserRoleRoles());
-        if (userDTO.getUserRoleRoles() != null && !userDTO.getUserRoleRoles().isEmpty()) {
-            if (userRoleRoles.size() != userDTO.getUserRoleRoles().size()) {
-                throw new NotFoundException("one of userRoleRoles not found");
-            }
+        final List<Role> roles = roleRepository.findAllById(
+                userDTO.getUserRoles() == null
+                        ? List.of()
+                        : userDTO.getUserRoles()
+        );
+
+        if (userDTO.getUserRoles() != null
+                && roles.size() != userDTO.getUserRoles().size()) {
+            throw new NotFoundException("one of userRoleRoles not found");
         }
 
-        user.setUserRoleRoles(new HashSet<>(userRoleRoles));
+        user.setUserRoleRoles(new HashSet<>(roles));
         return user;
     }
 
+    /* =======================
+       USO INTERNO
+       ======================= */
     public Map<Long, String> getUserValues() {
         return userRepository.findAll(Sort.by("id"))
                 .stream()
-                .collect(CustomCollectors.toSortedMap(User::getId, User::getFullName));
+                .collect(CustomCollectors.toSortedMap(
+                        User::getId,
+                        User::getFullName
+                ));
     }
 
+    /* =======================
+       EVENTOS
+       ======================= */
     @EventListener(BeforeDeleteRole.class)
     public void on(final BeforeDeleteRole event) {
-        userRepository.findAllByUserRoleRolesId(event.getId()).forEach(user ->
-                user.getUserRoleRoles().removeIf(role -> role.getId().equals(event.getId())));
+        userRepository.findAllByUserRoleRolesId(event.getId())
+                .forEach(user ->
+                        user.getUserRoleRoles()
+                                .removeIf(role ->
+                                        role.getId().equals(event.getId())));
     }
 }

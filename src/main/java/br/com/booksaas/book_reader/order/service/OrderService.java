@@ -8,9 +8,9 @@ import br.com.booksaas.book_reader.order.repositorie.OrderRepository;
 import br.com.booksaas.book_reader.user.repositorie.UserRepository;
 import br.com.booksaas.book_reader.util.NotFoundException;
 import br.com.booksaas.book_reader.util.ReferencedException;
-import java.util.List;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -20,31 +20,43 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
-    public OrderService(final OrderRepository orderRepository,
-            final UserRepository userRepository) {
+    public OrderService(
+            final OrderRepository orderRepository,
+            final UserRepository userRepository
+    ) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
     }
 
-    public List<OrderDTO> findAll() {
-        final List<Order> orders = orderRepository.findAll(Sort.by("id"));
-        return orders.stream()
-                .map(order -> mapToDTO(order, new OrderDTO()))
-                .toList();
+    /* =======================
+       PAGINAÇÃO
+       ======================= */
+    public Page<OrderDTO> findAll(Pageable pageable) {
+        return orderRepository.findAll(pageable)
+                .map(order -> mapToDTO(order, new OrderDTO()));
     }
 
+    /* =======================
+       BUSCA POR ID
+       ======================= */
     public OrderDTO get(final Long id) {
         return orderRepository.findById(id)
                 .map(order -> mapToDTO(order, new OrderDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
+    /* =======================
+       CREATE
+       ======================= */
     public Long create(final OrderDTO orderDTO) {
         final Order order = new Order();
         mapToEntity(orderDTO, order);
         return orderRepository.save(order).getId();
     }
 
+    /* =======================
+       UPDATE
+       ======================= */
     public void update(final Long id, final OrderDTO orderDTO) {
         final Order order = orderRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -52,12 +64,18 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    /* =======================
+       DELETE
+       ======================= */
     public void delete(final Long id) {
         final Order order = orderRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
         orderRepository.delete(order);
     }
 
+    /* =======================
+       MAPEAMENTOS
+       ======================= */
     private OrderDTO mapToDTO(final Order order, final OrderDTO orderDTO) {
         orderDTO.setId(order.getId());
         orderDTO.setTotalAmount(order.getTotalAmount());
@@ -75,21 +93,26 @@ public class OrderService {
         order.setPaymentMethod(orderDTO.getPaymentMethod());
         order.setTransactionId(orderDTO.getTransactionId());
         order.setCreatedAt(orderDTO.getCreatedAt());
-        final User user = orderDTO.getUser() == null ? null : userRepository.findById(orderDTO.getUser())
+
+        final User user = orderDTO.getUser() == null
+                ? null
+                : userRepository.findById(orderDTO.getUser())
                 .orElseThrow(() -> new NotFoundException("user not found"));
+
         order.setUser(user);
         return order;
     }
 
+    /* =======================
+       EVENTOS
+       ======================= */
     @EventListener(BeforeDeleteUser.class)
     public void on(final BeforeDeleteUser event) {
-        final ReferencedException referencedException = new ReferencedException();
-        final Order userOrder = orderRepository.findFirstByUserId(event.getId());
-        if (userOrder != null) {
-            referencedException.setKey("user.order.user.referenced");
-            referencedException.addParam(userOrder.getId());
-            throw referencedException;
+        if (orderRepository.existsByUserId(event.getId())) {
+            final ReferencedException ex = new ReferencedException();
+            ex.setKey("user.order.user.referenced");
+            ex.addParam(event.getId());
+            throw ex;
         }
     }
-
 }

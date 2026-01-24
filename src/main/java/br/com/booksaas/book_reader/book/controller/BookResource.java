@@ -3,21 +3,16 @@ package br.com.booksaas.book_reader.book.controller;
 import br.com.booksaas.book_reader.book.dto.BookDTO;
 import br.com.booksaas.book_reader.book.service.BookService;
 import br.com.booksaas.book_reader.user.service.UserService;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -27,45 +22,50 @@ public class BookResource {
     private final BookService bookService;
     private final UserService userService;
 
-    public BookResource(final BookService bookService, final UserService userService) {
+    public BookResource(BookService bookService, UserService userService) {
         this.bookService = bookService;
         this.userService = userService;
     }
 
     @GetMapping
-    public ResponseEntity<List<BookDTO>> getAllBooks() {
-        return ResponseEntity.ok(bookService.findAll());
+    public Page<BookDTO> getAllBooks(
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        return bookService.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDTO> getBook(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(bookService.get(id));
+    public BookDTO getBook(@PathVariable Long id) {
+        return bookService.get(id);
     }
 
     @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createBook(@RequestBody @Valid final BookDTO bookDTO) {
-        final Long createdId = bookService.create(bookDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long createBook(@RequestBody @Valid BookDTO bookDTO) {
+        return bookService.create(bookDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateBook(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final BookDTO bookDTO) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateBook(
+            @PathVariable Long id,
+            @RequestBody @Valid BookDTO bookDTO
+    ) {
         bookService.update(id, bookDTO);
-        return ResponseEntity.ok(id);
     }
 
     @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteBook(@PathVariable(name = "id") final Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBook(@PathVariable Long id) {
         bookService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/userValues")
-    public ResponseEntity<Map<Long, String>> getUserValues() {
-        return ResponseEntity.ok(userService.getUserValues());
+    /* =======================
+       USO INTERNO / LOOKUPS
+       ======================= */
+    @GetMapping("/users/values")
+    public Map<Long, String> getUserValues() {
+        return userService.getUserValues();
     }
-
 }

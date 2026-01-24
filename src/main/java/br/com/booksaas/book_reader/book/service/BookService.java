@@ -10,10 +10,11 @@ import br.com.booksaas.book_reader.user.repositorie.UserRepository;
 import br.com.booksaas.book_reader.util.CustomCollectors;
 import br.com.booksaas.book_reader.util.NotFoundException;
 import br.com.booksaas.book_reader.util.ReferencedException;
-import java.util.List;
 import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -25,32 +26,45 @@ public class BookService {
     private final UserRepository userRepository;
     private final ApplicationEventPublisher publisher;
 
-    public BookService(final BookRepository bookRepository, final UserRepository userRepository,
-            final ApplicationEventPublisher publisher) {
+    public BookService(
+            final BookRepository bookRepository,
+            final UserRepository userRepository,
+            final ApplicationEventPublisher publisher
+    ) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.publisher = publisher;
     }
 
-    public List<BookDTO> findAll() {
-        final List<Book> books = bookRepository.findAll(Sort.by("id"));
-        return books.stream()
-                .map(book -> mapToDTO(book, new BookDTO()))
-                .toList();
+    /* =======================
+       PAGINAÇÃO
+       ======================= */
+    public Page<BookDTO> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable)
+                .map(book -> mapToDTO(book, new BookDTO()));
     }
 
+    /* =======================
+       BUSCA POR ID
+       ======================= */
     public BookDTO get(final Long id) {
         return bookRepository.findById(id)
                 .map(book -> mapToDTO(book, new BookDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
+    /* =======================
+       CREATE
+       ======================= */
     public Long create(final BookDTO bookDTO) {
         final Book book = new Book();
         mapToEntity(bookDTO, book);
         return bookRepository.save(book).getId();
     }
 
+    /* =======================
+       UPDATE
+       ======================= */
     public void update(final Long id, final BookDTO bookDTO) {
         final Book book = bookRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -58,6 +72,9 @@ public class BookService {
         bookRepository.save(book);
     }
 
+    /* =======================
+       DELETE
+       ======================= */
     public void delete(final Long id) {
         final Book book = bookRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -65,6 +82,9 @@ public class BookService {
         bookRepository.delete(book);
     }
 
+    /* =======================
+       MAPEAMENTOS
+       ======================= */
     private BookDTO mapToDTO(final Book book, final BookDTO bookDTO) {
         bookDTO.setId(book.getId());
         bookDTO.setTitle(book.getTitle());
@@ -90,27 +110,35 @@ public class BookService {
         book.setFileType(bookDTO.getFileType());
         book.setIsPremium(bookDTO.getIsPremium());
         book.setUploadedAt(bookDTO.getUploadedAt());
-        final User user = bookDTO.getUser() == null ? null : userRepository.findById(bookDTO.getUser())
+
+        final User user = bookDTO.getUser() == null
+                ? null
+                : userRepository.findById(bookDTO.getUser())
                 .orElseThrow(() -> new NotFoundException("user not found"));
+
         book.setUser(user);
         return book;
     }
 
+    /* =======================
+       USO INTERNO (MAP)
+       ======================= */
     public Map<Long, String> getBookValues() {
         return bookRepository.findAll(Sort.by("id"))
                 .stream()
                 .collect(CustomCollectors.toSortedMap(Book::getId, Book::getTitle));
     }
 
+    /* =======================
+       EVENTOS
+       ======================= */
     @EventListener(BeforeDeleteUser.class)
     public void on(final BeforeDeleteUser event) {
-        final ReferencedException referencedException = new ReferencedException();
-        final Book userBook = bookRepository.findFirstByUserId(event.getId());
-        if (userBook != null) {
-            referencedException.setKey("user.book.user.referenced");
-            referencedException.addParam(userBook.getId());
-            throw referencedException;
+        if (bookRepository.existsByUserId(event.getId())) {
+            final ReferencedException ex = new ReferencedException();
+            ex.setKey("user.book.user.referenced");
+            ex.addParam(event.getId());
+            throw ex;
         }
     }
-
 }
