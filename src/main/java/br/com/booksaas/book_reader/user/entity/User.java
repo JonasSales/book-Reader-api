@@ -1,6 +1,6 @@
 package br.com.booksaas.book_reader.user.entity;
 
-import br.com.booksaas.book_reader.ReadingProgress.entity.ReadingProgress;
+import br.com.booksaas.book_reader.readingprogress.entity.ReadingProgress;
 import br.com.booksaas.book_reader.book.entity.Book;
 import br.com.booksaas.book_reader.usersetting.entity.UserSetting;
 import br.com.booksaas.book_reader.order.entity.Order;
@@ -56,8 +56,13 @@ public class User implements UserDetails {
     @Column(nullable = false, columnDefinition = "tinyint", length = 1)
     private Boolean isPremium;
 
+    @CreatedDate
     @Column(nullable = false)
     private OffsetDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private OffsetDateTime lastUpdated;
 
     @ManyToMany
     @JoinTable(
@@ -79,13 +84,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<UserSetting> userUserSettings = new HashSet<>();
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime dateCreated;
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private OffsetDateTime lastUpdated;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
