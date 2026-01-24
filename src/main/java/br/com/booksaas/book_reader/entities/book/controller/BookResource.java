@@ -2,9 +2,8 @@ package br.com.booksaas.book_reader.entities.book.controller;
 
 import br.com.booksaas.book_reader.entities.book.dto.BookDTO;
 import br.com.booksaas.book_reader.entities.book.service.BookService;
-import br.com.booksaas.book_reader.entities.user.service.UserService;
+import br.com.booksaas.book_reader.entities.user.entity.User;
 import jakarta.validation.Valid;
-import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -20,61 +21,46 @@ import org.springframework.web.bind.annotation.*;
 public class BookResource {
 
     private final BookService bookService;
-    private final UserService userService;
 
-    public BookResource(BookService bookService, UserService userService) {
+    public BookResource(BookService bookService) {
         this.bookService = bookService;
-        this.userService = userService;
     }
 
     @GetMapping
-    public Page<BookDTO> getAllBooks(
-            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
-            Pageable pageable
-    ) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<BookDTO> getAllBooks(@PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return bookService.findAll(pageable);
     }
 
-    @GetMapping("/user/{id}")
-    public Page<BookDTO> getBookByUser(
-            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
-            Pageable pageable,
-            @PathVariable Long id
-    ) {
-        return bookService.findBookByUser(id, pageable);
+    @GetMapping("/me")
+    public Page<BookDTO> getBookByUser(@PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+       @AuthenticationPrincipal User user) {
+        return bookService.findBookByUser(user.getId(), pageable);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@bookSecurity.isOwner(#id, authentication)")
     public BookDTO getBook(@PathVariable Long id) {
         return bookService.get(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Long createBook(@RequestBody @Valid BookDTO bookDTO) {
-        return bookService.create(bookDTO);
+    public Long createBook(@AuthenticationPrincipal User user, @RequestBody @Valid BookDTO bookDTO) {
+        return bookService.create(user.getId(),bookDTO);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateBook(
-            @PathVariable Long id,
-            @RequestBody @Valid BookDTO bookDTO
-    ) {
+    @PreAuthorize("@bookSecurity.isOwner(#id, authentication)")
+    public void updateBook(@PathVariable Long id, @RequestBody @Valid BookDTO bookDTO) {
         bookService.update(id, bookDTO);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@bookSecurity.isOwner(#id, authentication)")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable Long id) {
         bookService.delete(id);
-    }
-
-    /* =======================
-       USO INTERNO / LOOKUPS
-       ======================= */
-    @GetMapping("/users/values")
-    public Map<Long, String> getUserValues() {
-        return userService.getUserValues();
     }
 }
