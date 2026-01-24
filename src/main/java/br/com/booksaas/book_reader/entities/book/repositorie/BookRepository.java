@@ -10,4 +10,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> findByUserId(Long userId, Pageable pageable);
 
     boolean existsByUserId(Long userId);
+
+    boolean existsByIdAndUserId(Long bookId, Long id);
 }
