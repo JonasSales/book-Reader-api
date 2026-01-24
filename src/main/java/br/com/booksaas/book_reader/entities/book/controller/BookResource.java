@@ -29,7 +29,7 @@ public class BookResource {
 
     @GetMapping
     public Page<BookDTO> getAllBooks(
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         return bookService.findAll(pageable);
