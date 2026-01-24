@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -33,19 +32,13 @@ public class JwtService {
 
     // Gera um token para o usuário
     public String generateToken(UserDetails userDetails) {
-
-        // O UserDetails verdadeiro é sua entidade User
         var user = (User) userDetails;
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId().toString());
-        claims.put("email", user.getEmail());
-        List<String> roles = user.getUserRoleRoles().stream()
-                .map(Role::getName)
-                .toList();
-
-        claims.put("role", roles);
-
+        claims.put("name", user.getFullName());
+        claims.put("roles", user.getUserRoleRoles().stream()
+                .map(Role::getName).toList());
         return generateToken(claims, userDetails);
     }
 
