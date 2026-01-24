@@ -7,7 +7,6 @@ import br.com.booksaas.book_reader.events.BeforeDeleteBook;
 import br.com.booksaas.book_reader.events.BeforeDeleteUser;
 import br.com.booksaas.book_reader.entities.book.dto.BookDTO;
 import br.com.booksaas.book_reader.entities.book.repositorie.BookRepository;
-import br.com.booksaas.book_reader.entities.user.repositorie.UserRepository;
 import br.com.booksaas.book_reader.util.CustomCollectors;
 import br.com.booksaas.book_reader.util.NotFoundException;
 import br.com.booksaas.book_reader.util.ReferencedException;
