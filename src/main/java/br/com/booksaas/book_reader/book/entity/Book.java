@@ -1,6 +1,6 @@
 package br.com.booksaas.book_reader.book.entity;
 
-import br.com.booksaas.book_reader.ReadingProgress.entity.ReadingProgress;
+import br.com.booksaas.book_reader.readingprogress.entity.ReadingProgress;
 import br.com.booksaas.book_reader.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
