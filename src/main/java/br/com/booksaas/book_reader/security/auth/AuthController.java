@@ -1,7 +1,7 @@
 package br.com.booksaas.book_reader.security.auth;
 
 import br.com.booksaas.book_reader.security.jwt.JwtService;
-import br.com.booksaas.book_reader.user.service.UserService;
+import br.com.booksaas.book_reader.entities.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

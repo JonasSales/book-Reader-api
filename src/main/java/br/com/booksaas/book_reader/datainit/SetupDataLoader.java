@@ -1,8 +1,8 @@
 package br.com.booksaas.book_reader.datainit;
 
-import br.com.booksaas.book_reader.user.entity.Role;
-import br.com.booksaas.book_reader.user.entity.User;
-import br.com.booksaas.book_reader.user.repositorie.UserRepository;
+import br.com.booksaas.book_reader.entities.user.entity.Role;
+import br.com.booksaas.book_reader.entities.user.entity.User;
+import br.com.booksaas.book_reader.entities.user.repositorie.UserRepository;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

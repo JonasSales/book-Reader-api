@@ -1,6 +1,6 @@
 package br.com.booksaas.book_reader.security.jwt;
 
-import br.com.booksaas.book_reader.user.entity.User;
+import br.com.booksaas.book_reader.entities.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
