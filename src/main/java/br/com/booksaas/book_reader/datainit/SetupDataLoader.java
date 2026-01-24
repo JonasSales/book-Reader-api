@@ -3,6 +3,7 @@ package br.com.booksaas.book_reader.datainit;
 import br.com.booksaas.book_reader.user.entity.Role;
 import br.com.booksaas.book_reader.user.entity.User;
 import br.com.booksaas.book_reader.user.repositorie.UserRepository;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class SetupDataLoader implements CommandLineRunner {
 
     @Override
     @Transactional
-    public void run(String... args) throws Exception {
+    public void run(String @NonNull ... args) throws Exception {
         // 1. Criar as roles com prefixo ROLE_
 
         // 2. Criar o usuário Admin
