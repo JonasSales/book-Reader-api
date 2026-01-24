@@ -1,30 +1,33 @@
-HELP.md
+# Maven
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-application-local.properties
+
+# Logs
 *.log
-.DS_Store
-node/
-node_modules/
-coverage/
+
+# Environment / Config
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+application-local.properties
 
-## IntelliJ IDEA
+# OS
+.DS_Store
+
+# IntelliJ IDEA
 .idea
 *.iws
 *.iml
 *.ipr
 
-## VS Code
+# VS Code
 .vscode/
 
-## STS
+# STS / Eclipse
 .apt_generated
 .classpath
 .factorypath
@@ -33,12 +36,9 @@ coverage/
 .springBeans
 .sts4-cache
 
-## NetBeans
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
