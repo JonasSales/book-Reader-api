@@ -2,6 +2,7 @@ package br.com.booksaas.book_reader.entities.user.entity;
 
 import br.com.booksaas.book_reader.entities.readingprogress.entity.ReadingProgress;
 import br.com.booksaas.book_reader.entities.book.entity.Book;
+import br.com.booksaas.book_reader.entities.user.dto.UserDTO;
 import br.com.booksaas.book_reader.entities.usersetting.entity.UserSetting;
 import br.com.booksaas.book_reader.entities.order.entity.Order;
 import jakarta.persistence.*;
@@ -10,7 +11,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -24,6 +27,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -75,5 +80,11 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public User(UserDTO userDTO){
+        setId(userDTO.getId());
+        setFullName(userDTO.getFullName());
+        setEmail(userDTO.getEmail());
     }
 }
