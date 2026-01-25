@@ -1,11 +1,13 @@
 package br.com.booksaas.book_reader.entities.order.service;
 
 import br.com.booksaas.book_reader.entities.order.entity.Order;
+import br.com.booksaas.book_reader.entities.order.entity.OrderStatus;
 import br.com.booksaas.book_reader.entities.user.entity.User;
+import br.com.booksaas.book_reader.entities.user.service.UserService;
 import br.com.booksaas.book_reader.events.BeforeDeleteUser;
 import br.com.booksaas.book_reader.entities.order.dto.OrderDTO;
 import br.com.booksaas.book_reader.entities.order.repositorie.OrderRepository;
-import br.com.booksaas.book_reader.entities.user.repositorie.UserRepository;
+
 import br.com.booksaas.book_reader.util.NotFoundException;
 import br.com.booksaas.book_reader.util.ReferencedException;
 import org.springframework.context.event.EventListener;
@@ -18,14 +20,11 @@ import org.springframework.stereotype.Service;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
-
+    private final UserService userService;
     public OrderService(
-            final OrderRepository orderRepository,
-            final UserRepository userRepository
-    ) {
+            final OrderRepository orderRepository, UserService userService) {
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     /* =======================
@@ -33,6 +32,12 @@ public class OrderService {
        ======================= */
     public Page<OrderDTO> findAll(Pageable pageable) {
         return orderRepository.findAll(pageable)
+                .map(order -> mapToDTO(order, new OrderDTO()));
+    }
+
+
+    public Page<OrderDTO> findAllOrdersByUser(Pageable pageable, Long idUser){
+        return orderRepository.findAllByUserId(pageable, idUser)
                 .map(order -> mapToDTO(order, new OrderDTO()));
     }
 
@@ -48,8 +53,10 @@ public class OrderService {
     /* =======================
        CREATE
        ======================= */
-    public Long create(final OrderDTO orderDTO) {
-        final Order order = new Order();
+    public Long create(User user,final OrderDTO orderDTO) {
+        Order order = new Order();
+        order.setStatus(OrderStatus.SENT);
+        order.setUser(user);
         mapToEntity(orderDTO, order);
         return orderRepository.save(order).getId();
     }
@@ -61,6 +68,16 @@ public class OrderService {
         final Order order = orderRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(orderDTO, order);
+        orderRepository.save(order);
+    }
+
+
+    /* =======================
+       Cancelando Pedido
+       ======================= */
+    public void cancelOrder(Long idOrder) {
+        Order order = orderRepository.findById(idOrder).orElseThrow(NotFoundException::new);
+        order.setStatus(OrderStatus.CANCELED);
         orderRepository.save(order);
     }
 
@@ -93,12 +110,7 @@ public class OrderService {
         order.setPaymentMethod(orderDTO.getPaymentMethod());
         order.setTransactionId(orderDTO.getTransactionId());
         order.setCreatedAt(orderDTO.getCreatedAt());
-
-        final User user = orderDTO.getUser() == null
-                ? null
-                : userRepository.findById(orderDTO.getUser())
-                .orElseThrow(() -> new NotFoundException("user not found"));
-
+        final User user = new User(userService.get(orderDTO.getUser()));
         order.setUser(user);
     }
 
