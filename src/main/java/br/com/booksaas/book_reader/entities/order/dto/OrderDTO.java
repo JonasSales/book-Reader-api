@@ -1,5 +1,6 @@
 package br.com.booksaas.book_reader.entities.order.dto;
 
+import br.com.booksaas.book_reader.entities.order.entity.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Digits;
@@ -24,8 +25,7 @@ public class OrderDTO {
     private BigDecimal totalAmount;
 
     @NotNull
-    @Size(max = 255)
-    private String status;
+    private OrderStatus status;
 
     @Size(max = 100)
     private String paymentMethod;
